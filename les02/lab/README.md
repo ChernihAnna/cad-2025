@@ -54,6 +54,10 @@ classDiagram
         -String name
         -double price
         -int quantity
+        +Product(String name, double price, int quantity)
+        +getName() String
+        +getPrice() double
+        +getQuantity() int
     }
 
     class ProductProvider {
@@ -73,7 +77,7 @@ classDiagram
     class ResourceFileReader {
         -String fileName
         +read() String
-        +init()
+        +init() void
     }
 
     class Parser {
@@ -87,19 +91,11 @@ classDiagram
 
     class Renderer {
         <<interface>>
-        +render(List~Product~ products)
+        +render(List~Product~ products) void
     }
 
     class ConsoleTableRenderer {
-        +render(List~Product~ products)
-    }
-
-    class HTMLTableRenderer {
-        +render(List~Product~ products)
-    }
-
-    class CSVParserPerformanceAspect {
-        +measureParsingTime(ProceedingJoinPoint)
+        +render(List~Product~ products) void
     }
 
     App --> AppConfig
@@ -110,10 +106,9 @@ classDiagram
     Reader <|.. ResourceFileReader
     Parser <|.. CSVParser
     Renderer <|.. ConsoleTableRenderer
-    Renderer <|.. HTMLTableRenderer
 
     ConcreteProductProvider --> Reader
     ConcreteProductProvider --> Parser
-
-    CSVParserPerformanceAspect ..> CSVParser
+    CSVParser --> Product
+    ConcreteProductProvider --> Product
 ```
