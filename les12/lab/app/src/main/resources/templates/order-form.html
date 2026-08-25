@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Заказ</title>
+</head>
+<body>
+
+<h1 th:text="${order.orderId == null ? 'Создание заказа' : 'Изменение заказа'}">
+    Заказ
+</h1>
+
+<form th:if="${order.orderId == null}"
+      th:action="@{/orders}"
+      method="post">
+
+    <div>
+        <label>Покупатель:</label>
+
+        <select name="customerId" required>
+            <option th:each="customer : ${customers}"
+                    th:value="${customer.customerId}"
+                    th:text="${customer.name}">
+            </option>
+        </select>
+    </div>
+
+    <br>
+
+    <div>
+        <label>Сумма:</label>
+
+        <input type="number"
+               name="totalPrice"
+               step="0.01"
+               min="0"
+               required>
+    </div>
+
+    <br>
+
+    <div>
+        <label>Статус:</label>
+
+        <input type="text"
+               name="status"
+               value="NEW"
+               required>
+    </div>
+
+    <br>
+
+    <div>
+        <label>Адрес доставки:</label>
+
+        <input type="text"
+               name="shippingAddress"
+               required>
+    </div>
+
+    <br>
+
+    <button type="submit">
+        Сохранить
+    </button>
+
+    <a th:href="@{/orders}">
+        Отмена
+    </a>
+
+</form>
+
+
+<form th:if="${order.orderId != null}"
+      th:action="@{/orders/{id}(id=${order.orderId})}"
+      method="post">
+
+    <div>
+        <label>Покупатель:</label>
+
+        <select name="customerId" required>
+            <option th:each="customer : ${customers}"
+                    th:value="${customer.customerId}"
+                    th:text="${customer.name}"
+                    th:selected="${order.customer != null
+                                  and order.customer.customerId == customer.customerId}">
+            </option>
+        </select>
+    </div>
+
+    <br>
+
+    <div>
+        <label>Сумма:</label>
+
+        <input type="number"
+               name="totalPrice"
+               step="0.01"
+               min="0"
+               th:value="${order.totalPrice}"
+               required>
+    </div>
+
+    <br>
+
+    <div>
+        <label>Статус:</label>
+
+        <input type="text"
+               name="status"
+               th:value="${order.status}"
+               required>
+    </div>
+
+    <br>
+
+    <div>
+        <label>Адрес доставки:</label>
+
+        <input type="text"
+               name="shippingAddress"
+               th:value="${order.shippingAddress}"
+               required>
+    </div>
+
+    <br>
+
+    <button type="submit">
+        Сохранить
+    </button>
+
+    <a th:href="@{/orders}">
+        Отмена
+    </a>
+
+</form>
+
+</body>
+</html>
