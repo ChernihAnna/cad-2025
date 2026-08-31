@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Список задач</title>
+</head>
+<body>
+
+<h1>Список задач</h1>
+
+<ul>
+    <li th:each="task : ${tasks}">
+        <strong th:text="${task.title}"></strong>
+        —
+        <span th:text="${task.description}"></span>
+        —
+        <span th:if="${task.completed}">Выполнена</span>
+        <span th:unless="${task.completed}">Не выполнена</span>
+
+        <a th:href="@{/deleteTask/{id}(id=${task.id})}">
+            Удалить
+        </a>
+
+        <form th:action="@{/updateTask/{id}(id=${task.id})}"
+              method="post"
+              style="display:inline;">
+            <input type="hidden"
+                   name="completed"
+                   th:value="${!task.completed}">
+            <button type="submit">
+                <span th:if="${!task.completed}">Выполнить</span>
+                <span th:if="${task.completed}">Отменить выполнение</span>
+            </button>
+        </form>
+    </li>
+</ul>
+
+<h2>Добавить новую задачу</h2>
+
+<form action="/addTask" method="post">
+    <input type="hidden"
+       th:name="${_csrf.parameterName}"
+       th:value="${_csrf.token}">
+
+    <label>
+        Название:
+        <input type="text" name="title" required>
+    </label>
+
+    <br><br>
+
+    <label>
+        Описание:
+        <input type="text" name="description" required>
+    </label>
+
+    <br><br>
+
+    <button type="submit">Добавить задачу</button>
+
+</form>
+
+</body>
+</html>
