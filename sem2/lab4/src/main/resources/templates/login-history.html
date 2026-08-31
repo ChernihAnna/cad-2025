@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>История входов</title>
+</head>
+
+<body>
+
+<h1>История входов пользователей</h1>
+
+<div th:if="${#lists.isEmpty(loginHistory)}">
+    <p>История входов пока пуста.</p>
+</div>
+
+<table th:if="${not #lists.isEmpty(loginHistory)}"
+       border="1"
+       cellpadding="8">
+
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Пользователь</th>
+        <th>Email</th>
+        <th>Дата входа</th>
+        <th>IP-адрес</th>
+    </tr>
+    </thead>
+
+    <tbody>
+
+    <tr th:each="login : ${loginHistory}">
+
+        <td th:text="${login.id}"></td>
+
+        <td th:text="${login.user != null ? login.user.name : 'Неизвестен'}"></td>
+
+        <td th:text="${login.user != null ? login.user.email : 'Неизвестен'}"></td>
+
+        <td th:text="${#temporals.format(login.loginDate, 'dd.MM.yyyy HH:mm')}"></td>
+
+        <td th:text="${login.ipAddress}"></td>
+
+    </tr>
+
+    </tbody>
+
+</table>
+
+<br>
+
+<a href="/">
+    <button type="button">Вернуться к задачам</button>
+</a>
+
+</body>
+</html>

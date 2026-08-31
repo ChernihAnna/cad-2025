@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Список задач</title>
+</head>
+
+<body>
+
+<h1>Список задач</h1>
+
+<a href="/users">
+    <button type="button">Управление пользователями</button>
+</a>
+
+<h2>Добавить новую задачу</h2>
+
+<form th:action="@{/addTask}" method="post">
+
+    <label for="title">Название:</label>
+    <input type="text" id="title" name="title" required>
+
+    <br><br>
+
+    <label for="description">Описание:</label>
+    <input type="text" id="description" name="description">
+
+    <br><br>
+
+    <label for="priority">Приоритет:</label>
+    <select id="priority" name="priority">
+        <option value="Низкий">Низкий</option>
+        <option value="Средний" selected>Средний</option>
+        <option value="Высокий">Высокий</option>
+    </select>
+
+    <br><br>
+
+    <label for="category">Категория:</label>
+    <input type="text"
+           id="category"
+           name="category"
+           placeholder="Например: Учёба">
+
+    <br><br>
+<label for="userId">Пользователь:</label>
+
+<select id="userId" name="userId" required>
+    <option value="" disabled selected>
+        Выберите пользователя
+    </option>
+
+    <option th:each="user : ${users}"
+            th:value="${user.id}"
+            th:text="${user.name}">
+    </option>
+</select>
+
+<br><br>
+    <button type="submit">Добавить</button>
+
+</form>
+
+<hr>
+
+<h2>Задачи</h2>
+
+<div th:if="${#lists.isEmpty(tasks)}">
+    <p>Задач пока нет.</p>
+</div>
+
+<table th:if="${not #lists.isEmpty(tasks)}"
+       border="1"
+       cellpadding="8">
+
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Название</th>
+        <th>Описание</th>
+        <th>Приоритет</th>
+        <th>Категория</th>
+        <th>Пользователь</th>
+        <th>Дата создания</th>
+        <th>Статус</th>
+        <th>Действия</th>
+    </tr>
+    </thead>
+
+    <tbody>
+
+    <tr th:each="task : ${tasks}">
+
+        <td th:text="${task.id}"></td>
+
+        <td th:text="${task.title}"></td>
+
+        <td th:text="${task.description}"></td>
+
+        <td th:text="${task.priority}"></td>
+
+        <td th:text="${task.category}"></td>
+        <td th:text="${task.user != null ? task.user.name : 'Не назначен'}"></td>
+
+        <td th:text="${#temporals.format(task.createdAt, 'dd.MM.yyyy HH:mm')}"></td>
+
+        <td>
+
+            <span th:if="${task.completed}">
+                Выполнена
+            </span>
+
+            <span th:unless="${task.completed}">
+                Не выполнена
+            </span>
+
+        </td>
+
+        <td>
+
+            <!-- Выполнить задачу -->
+            <form th:if="${!task.completed}"
+                  th:action="@{/updateTask/{id}(id=${task.id})}"
+                  method="post"
+                  style="display:inline;">
+
+                <input type="hidden"
+                       name="completed"
+                       value="true">
+
+                <button type="submit">
+                    Выполнить
+                </button>
+
+            </form>
+
+            <!-- Отменить выполнение -->
+            <form th:if="${task.completed}"
+                  th:action="@{/updateTask/{id}(id=${task.id})}"
+                  method="post"
+                  style="display:inline;">
+
+                <input type="hidden"
+                       name="completed"
+                       value="false">
+
+                <button type="submit">
+                    Отменить выполнение
+                </button>
+
+            </form>
+
+            <!-- Удалить задачу -->
+            <a th:href="@{/deleteTask/{id}(id=${task.id})}">
+                <button type="button">
+                    Удалить
+                </button>
+            </a>
+
+        </td>
+
+    </tr>
+
+    <!-- ==================== -->
+    <!-- ПОДЗАДАЧИ -->
+    <!-- ==================== -->
+
+    <tr th:each="task : ${tasks}">
+
+        <td colspan="8">
+
+            <h3>
+                Подзадачи задачи:
+                <span th:text="${task.title}"></span>
+            </h3>
+
+            <!-- Добавление подзадачи -->
+            <form th:action="@{/addSubTask/{taskId}(taskId=${task.id})}"
+                  method="post">
+
+                <label>
+                    Новая подзадача:
+                </label>
+
+                <input type="text"
+                       name="description"
+                       placeholder="Описание подзадачи"
+                       required>
+
+                <button type="submit">
+                    Добавить подзадачу
+                </button>
+
+            </form>
+
+            <br>
+
+            <!-- Если подзадач нет -->
+            <div th:if="${#lists.isEmpty(task.subTasks)}">
+                Подзадач пока нет.
+            </div>
+
+            <!-- Список подзадач -->
+            <table th:if="${not #lists.isEmpty(task.subTasks)}"
+                   border="1"
+                   cellpadding="5">
+
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Описание</th>
+                    <th>Статус</th>
+                    <th>Действия</th>
+                </tr>
+                </thead>
+
+                <tbody>
+
+                <tr th:each="subTask : ${task.subTasks}">
+
+                    <td th:text="${subTask.id}"></td>
+
+                    <td th:text="${subTask.description}"></td>
+
+                    <td>
+
+                        <span th:if="${subTask.completed}">
+                            Выполнена
+                        </span>
+
+                        <span th:unless="${subTask.completed}">
+                            Не выполнена
+                        </span>
+
+                    </td>
+
+                    <td>
+
+                        <!-- Выполнить подзадачу -->
+                        <form th:if="${!subTask.completed}"
+                              th:action="@{/updateSubTask/{id}(id=${subTask.id})}"
+                              method="post"
+                              style="display:inline;">
+
+                            <input type="hidden"
+                                   name="completed"
+                                   value="true">
+
+                            <button type="submit">
+                                Выполнить
+                            </button>
+
+                        </form>
+
+                        <!-- Отменить выполнение -->
+                        <form th:if="${subTask.completed}"
+                              th:action="@{/updateSubTask/{id}(id=${subTask.id})}"
+                              method="post"
+                              style="display:inline;">
+
+                            <input type="hidden"
+                                   name="completed"
+                                   value="false">
+
+                            <button type="submit">
+                                Отменить выполнение
+                            </button>
+
+                        </form>
+
+                        <!-- Удалить подзадачу -->
+                        <a th:href="@{/deleteSubTask/{id}(id=${subTask.id})}">
+                            <button type="button">
+                                Удалить
+                            </button>
+                        </a>
+
+                    </td>
+
+                </tr>
+
+                </tbody>
+
+            </table>
+
+        </td>
+
+    </tr>
+
+    </tbody>
+
+</table>
+
+</body>
+</html>

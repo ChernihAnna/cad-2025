@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>История изменений задач</title>
+</head>
+
+<body>
+
+<h1>История изменений задач</h1>
+
+<div th:if="${#lists.isEmpty(taskHistory)}">
+    <p>История изменений пока пуста.</p>
+</div>
+
+<table th:if="${not #lists.isEmpty(taskHistory)}"
+       border="1"
+       cellpadding="8">
+
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Задача</th>
+        <th>Дата изменения</th>
+        <th>Старое состояние</th>
+        <th>Новое состояние</th>
+    </tr>
+    </thead>
+
+    <tbody>
+
+    <tr th:each="history : ${taskHistory}">
+
+        <td th:text="${history.id}"></td>
+
+        <td th:text="${history.task != null ? history.task.title : 'Неизвестна'}"></td>
+
+        <td th:text="${#temporals.format(history.changeDate, 'dd.MM.yyyy HH:mm')}"></td>
+
+        <td th:text="${history.oldState}"></td>
+
+        <td th:text="${history.newState}"></td>
+
+    </tr>
+
+    </tbody>
+
+</table>
+
+<br>
+
+<a href="/">
+    <button type="button">Вернуться к задачам</button>
+</a>
+
+</body>
+</html>
