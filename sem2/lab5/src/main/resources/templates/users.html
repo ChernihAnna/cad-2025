@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Пользователи</title>
+</head>
+
+<body>
+
+<h1>Пользователи</h1>
+
+<h2>Добавить пользователя</h2>
+
+<form th:action="@{/users/add}" method="post">
+
+    <label for="username">Имя:</label>
+    <input type="text" id="username" name="username" required>
+
+    <br><br>
+
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" required>
+
+    <br><br>
+
+    <label for="password">Пароль:</label>
+    <input type="password" id="password" name="password" required>
+
+    <br><br>
+
+    <label for="role">Роль:</label>
+    <select id="role" name="role" required>
+        <option value="USER">USER</option>
+        <option value="MODERATOR">MODERATOR</option>
+    </select>
+
+    <br><br>
+
+    <button type="submit">Добавить</button>
+
+</form>
+
+<hr>
+
+<h2>Список пользователей</h2>
+
+<div th:if="${#lists.isEmpty(users)}">
+    <p>Пользователей пока нет.</p>
+</div>
+
+<table th:if="${not #lists.isEmpty(users)}"
+       border="1"
+       cellpadding="8">
+
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Имя</th>
+        <th>Email</th>
+        <th>Роль</th>
+        <th>Действия</th>
+    </tr>
+    </thead>
+
+    <tbody>
+
+    <tr th:each="user : ${users}">
+
+        <td th:text="${user.id}"></td>
+
+        <td th:text="${user.name}"></td>
+
+        <td th:text="${user.email}"></td>
+
+        <td th:text="${user.role}"></td>
+
+        <td>
+            <a th:href="@{/users/delete/{id}(id=${user.id})}">
+                <button type="button">Удалить</button>
+            </a>
+        </td>
+
+    </tr>
+
+    </tbody>
+
+</table>
+
+<br>
+
+<a href="/">
+    <button type="button">Вернуться к задачам</button>
+</a>
+
+</body>
+</html>
